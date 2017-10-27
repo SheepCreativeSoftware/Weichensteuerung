@@ -3,8 +3,8 @@
 #include <Servo.h>
 
 class Weiche {
-    int posMax, posMin;
-	bool posDirection;
+    int posMax, posMin = 1500;
+	bool posDirection = 0;
 	Servo myServo;
   public:
     void setPosMin(int);

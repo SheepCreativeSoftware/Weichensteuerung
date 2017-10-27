@@ -1,4 +1,3 @@
-#include <Servo.h>
 #include "Weiche.h"
 #include "Speicher.h"
 
@@ -63,6 +62,7 @@ void ladeAusEEPROM();
 void setup() {
 	Serial.begin(9600); //Aktiviere Serielle Kommunkation
 	/*Definiere Weichen*/
+	
 	weiche[0].attach(WeichePin1);
 	weiche[1].attach(WeichePin2);
 	weiche[2].attach(WeichePin3);
@@ -93,28 +93,7 @@ void setup() {
 	Taster[1].init(TasterPin2);
 	Taster[2].init(TasterPin3);
 	Taster[3].init(TasterPin4);
-	int speicherAdresse = 0;
-	speicherAdresse = speicherWeiche[0].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[1].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[2].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[3].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[4].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[5].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[6].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[7].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[8].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[9].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[10].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[11].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[12].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[13].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[14].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[15].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[16].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[17].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[18].init(speicherAdresse);
-	speicherAdresse = speicherWeiche[19].init(speicherAdresse);
-	ladeAusEEPROM();
+
 }
 
 void loop() {
@@ -132,15 +111,15 @@ void ladeAusEEPROM(){
 			speicherWeiche[i].speichernMin(posMin);
 		}
 		weiche[i].setPosMin(posMin);
-	}
-	for(int i = 0; i <= 20; i++) {
 		posMax = speicherWeiche[i].ladenMax();
 		if(posMax = 0) {
 			posMax = 1800;
 			speicherWeiche[i].speichernMax(posMax);
 		}
 		weiche[i].setPosMax(posMax);
+		weiche[i].setWeiche(false);
 	}
+
 }
 
 
