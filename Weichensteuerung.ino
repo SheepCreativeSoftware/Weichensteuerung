@@ -2,36 +2,41 @@
 #include "Speicher.h"
 #include <LiquidCrystal_I2C.h>
 
-#define WeichePin1 6
-#define WeichePin2 6
-#define WeichePin3 6
-#define WeichePin4 6
-#define WeichePin5 6
-#define WeichePin6 6
-#define WeichePin7 6
-#define WeichePin8 6
-#define WeichePin9 6
-#define WeichePin10 6
-#define WeichePin11 6
-#define WeichePin12 6
-#define WeichePin13 6
-#define WeichePin14 6
-#define WeichePin15 6
-#define WeichePin16 6
-#define WeichePin17 6
-#define WeichePin18 6
-#define WeichePin19 6
-#define WeichePin20 6
+#define WeichePin1 23
+#define WeichePin2 25
+#define WeichePin3 27
+#define WeichePin4 29
+#define WeichePin5 31
+#define WeichePin6 33
+#define WeichePin7 35
+#define WeichePin8 37
+#define WeichePin9 39
+#define WeichePin10 41
+#define WeichePin11 43
+#define WeichePin12 45
+#define WeichePin13 47
+#define WeichePin14 49
+#define WeichePin15 51
+#define WeichePin16 53
+#define WeichePin17 46
+#define WeichePin18 48
+#define WeichePin19 50
+#define WeichePin20 52
 
 #define TasterPin1 5
 #define TasterPin2 4
 #define TasterPin3 3
 #define TasterPin4 2
 
-unsigned int indexHauptmenu = 0;
+#define printByte(args)  write(args);
+
+unsigned int indexHauptmenu = 1;
 unsigned int indexWeichenMenu = 0;
 unsigned int indexEinstellungMenu = 0;
 unsigned int indexStrassenMenu = 0;
+unsigned int indexWeicheIntern = 0;
+bool starteNeuesMenu = true;
+bool positionWeiche[20] = { 0 };
 
 class ButtonFlanke {
       bool lastFlanke;
@@ -64,6 +69,8 @@ Speicher speicherWeiche[20];
 LiquidCrystal_I2C lcd(0x27,20,4);
 
 void ladeAusEEPROM();
+void lcdHauptmenu(bool, bool, bool, bool);
+void lcdWeichenmenu(bool, bool, bool, bool);
 
 
 void setup() {
@@ -124,36 +131,195 @@ void setup() {
 	ladeAusEEPROM();
 	lcd.init();
 	lcd.backlight();
+	lcd.clear();
 }
 
 void loop() {
-	lcd.setCursor(3,0);
-	lcd.print("Hello, world!");
-	
-  
+	bool runterTaste = Taster[0].readFlanke();
+	bool hochTaste = Taster[1].readFlanke();
+	bool linksTaste = Taster[2].readFlanke();
+	bool rechtsTaste = Taster[3].readFlanke();
+	//lcd.printByte(0x7E); //Pfeil nach rechts
+	if(starteNeuesMenu) {
+		lcd.clear();
+		starteNeuesMenu = false;
+	}
+	lcdWeichenmenu(runterTaste, hochTaste, linksTaste, rechtsTaste);
+	lcdHauptmenu(runterTaste, hochTaste, linksTaste, rechtsTaste);
 }
 
+
 void ladeAusEEPROM(){
-	int posMin = 0;
-	int posMax = 0;
+	unsigned int posMin = 0;
+	unsigned int posMax = 0;
 	for(int i = 0; i <= 20; i++) {
 		posMin = speicherWeiche[i].ladenMin();
-		if(posMin == 0) {
+		if(posMin >= 1500) {
 			posMin = 1200;
 			speicherWeiche[i].speichernMin(posMin);
 		}
 		weiche[i].setPosMin(posMin);
 		posMax = speicherWeiche[i].ladenMax();
-		if(posMax == 0) {
+		if(posMax >= 3000) {
 			posMax = 1800;
 			speicherWeiche[i].speichernMax(posMax);
 		}
 		weiche[i].setPosMax(posMax);
+
 		weiche[i].setWeiche(false);
 	}
 
 }
 
+void lcdHauptmenu(bool runterTaste, bool hochTaste, bool linksTaste, bool rechtsTaste){
+	if(indexHauptmenu >= 1){
+		lcd.setCursor(3,0);
+		lcd.print("--Hauptmenu--");
+		lcd.setCursor(2,1);
+		lcd.print("Weichen");
+		lcd.setCursor(2,2);
+		lcd.print("Strassen");
+		lcd.setCursor(2,3);
+		lcd.print("Einstellungen");
+		if(hochTaste){
+			indexHauptmenu++;
+			if(indexHauptmenu == 4) indexHauptmenu = 1;
+		} else if(runterTaste){
+			indexHauptmenu--;
+			if(indexHauptmenu == 0) indexHauptmenu = 3;
+		}
+		if(indexHauptmenu == 1){ //Weichen
+			lcd.setCursor(0,1);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,2);
+			lcd.print(" ");
+			lcd.setCursor(0,3);
+			lcd.print(" ");
+			if(rechtsTaste) {
+				starteNeuesMenu = true;
+				indexHauptmenu = 0;
+				indexWeichenMenu = 1;
+				indexWeicheIntern = 0;
+			}
+		} else if(indexHauptmenu == 2){ //Strassen
+			lcd.setCursor(0,2);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,1);
+			lcd.print(" ");
+			lcd.setCursor(0,3);
+			lcd.print(" ");
+		} else if(indexHauptmenu == 3){ //Einstellungen
+			lcd.setCursor(0,3);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,1);
+			lcd.print(" ");
+			lcd.setCursor(0,2);
+			lcd.print(" ");
+		}
+
+		
+	}
+}
+void lcdWeichenmenu(bool runterTaste, bool hochTaste, bool linksTaste, bool rechtsTaste){
+		if(indexWeichenMenu >= 1) {
+		if(linksTaste){
+			starteNeuesMenu = true;
+			indexHauptmenu = 1;
+			indexWeichenMenu = 0;
+		}
+		for(int i = 0; i <= 19; i++){
+			positionWeiche[i] = weiche[i].readPosWeiche();
+		}
+
+		lcd.setCursor(3,0);
+		lcd.print("--Weichen--");
+		lcd.setCursor(2,1);
+		lcd.print("Weiche "); lcd.print(indexWeicheIntern+1);
+		lcd.setCursor(12,1);
+		if(positionWeiche[indexWeicheIntern]) {
+			lcd.print("Gebogen");
+		}else {
+			lcd.print("Gerade ");
+		}
+		lcd.setCursor(2,2);
+		lcd.print("Weiche "); lcd.print(indexWeicheIntern+2);
+		lcd.setCursor(12,2);
+		if(positionWeiche[indexWeicheIntern+1]) {
+			lcd.print("Gebogen");
+		}else {
+			lcd.print("Gerade ");
+		}
+		lcd.setCursor(2,3);
+		lcd.print("Weiche "); lcd.print(indexWeicheIntern+3);
+		lcd.setCursor(12,3);
+		if(positionWeiche[indexWeicheIntern+2]) {
+			lcd.print("Gebogen");
+		}else {
+			lcd.print("Gerade ");
+		}
+		
+		if(hochTaste){
+			indexWeichenMenu++;
+			lcd.setCursor(10,1);
+			lcd.print(" ");
+			lcd.setCursor(10,2);
+			lcd.print(" ");
+			lcd.setCursor(10,3);
+			lcd.print(" ");
+			if(indexWeichenMenu == 4) {
+				indexWeichenMenu = 1;
+				if(indexWeicheIntern == 18) {
+					indexWeicheIntern = 0;
+				} else {
+					indexWeicheIntern += 3;
+				}
+			}			
+		} else if(runterTaste){
+			indexWeichenMenu--;
+			lcd.setCursor(10,1);
+			lcd.print(" ");
+			lcd.setCursor(10,2);
+			lcd.print(" ");
+			lcd.setCursor(10,3);
+			lcd.print(" ");
+			if(indexWeichenMenu == 0) {
+				indexWeichenMenu = 3;
+				if(indexWeicheIntern == 0) {
+					indexWeicheIntern = 18;
+				} else {
+					indexWeicheIntern -= 3;
+				}
+			}
+		} else if(rechtsTaste){
+			int tempVar = indexWeicheIntern+indexWeichenMenu-1;
+			weiche[tempVar].setWeiche(!positionWeiche[tempVar]);
+
+		}
+		if(indexWeichenMenu == 1){ //Weichen
+			lcd.setCursor(0,1);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,2);
+			lcd.print(" ");
+			lcd.setCursor(0,3);
+			lcd.print(" ");
+		} else if(indexWeichenMenu == 2){ //Strassen
+			lcd.setCursor(0,2);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,1);
+			lcd.print(" ");
+			lcd.setCursor(0,3);
+			lcd.print(" ");
+		} else if(indexWeichenMenu == 3){ //Einstellungen
+			lcd.setCursor(0,3);
+			lcd.printByte(0x7E);
+			lcd.setCursor(0,1);
+			lcd.print(" ");
+			lcd.setCursor(0,2);
+			lcd.print(" ");
+		}
+	}
+	
+}
 
 
 

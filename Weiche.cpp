@@ -42,4 +42,9 @@ void Weiche::setWeiche(bool position){
 			this->myServo.writeMicroseconds(posMin);
 		}
 	}
+	positionWeiche = position;
+}
+
+bool Weiche::readPosWeiche(){
+	return positionWeiche;
 }

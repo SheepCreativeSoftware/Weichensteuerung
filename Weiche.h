@@ -5,6 +5,7 @@
 class Weiche {
     int posMax, posMin = 1500;
 	bool posDirection = 0;
+	bool positionWeiche = false;
 	Servo myServo;
   public:
     void setPosMin(int);
@@ -15,6 +16,7 @@ class Weiche {
 	bool readposDirection();
 	void setWeiche(bool);
 	void attach(int);
+	bool readPosWeiche();
 };
 
 #endif

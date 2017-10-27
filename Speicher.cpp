@@ -1,30 +1,30 @@
 #include "Speicher.h"
 
 
-int Speicher::init(int address){
+unsigned int Speicher::init(unsigned int address){
 	saveAddress = address;
-	int sizeOfInt = sizeof(int);
+	unsigned int sizeOfInt = sizeof(int);
 	saveAddress2 = address + sizeOfInt;
-	int temp = saveAddress2 + sizeOfInt;
+	unsigned int temp = saveAddress2 + sizeOfInt;
 	return temp;
 }
 
-int Speicher::ladenMin(){
-	int varMin = 0;
+unsigned int Speicher::ladenMin(){
+	unsigned int varMin = 0;
 	EEPROM.get(saveAddress2, varMin);
 	return varMin;
 }
 	
-int Speicher::ladenMax(){
-	int varMax = 0;
+unsigned int Speicher::ladenMax(){
+	unsigned int varMax = 0;
 	EEPROM.get(saveAddress2, varMax);
 	return varMax;
 }
 
-void Speicher::speichernMin(int varMin){
+void Speicher::speichernMin(unsigned int varMin){
 	EEPROM.put(saveAddress, varMin);
 }
 
-void Speicher::speichernMax(int varMax){
+void Speicher::speichernMax(unsigned int varMax){
 	EEPROM.put(saveAddress2, varMax);
 }

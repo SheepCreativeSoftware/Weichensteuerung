@@ -3,13 +3,13 @@
 #include <EEPROM.h>
 
 class Speicher {
-		int saveAddress, saveAddress2;
+		unsigned int saveAddress, saveAddress2;
 	public:
-		int init(int);
-		int ladenMin();
-		int ladenMax();
-		void speichernMin(int);
-		void speichernMax(int);
+		unsigned int init(unsigned int);
+		unsigned int ladenMin();
+		unsigned int ladenMax();
+		void speichernMin(unsigned int);
+		void speichernMax(unsigned int);
 };
 
 #endif
