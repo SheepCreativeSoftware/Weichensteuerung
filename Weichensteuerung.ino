@@ -1,5 +1,6 @@
 #include "Weiche.h"
 #include "Speicher.h"
+#include <LiquidCrystal_I2C.h>
 
 #define WeichePin1 6
 #define WeichePin2 6
@@ -26,6 +27,11 @@
 #define TasterPin2 4
 #define TasterPin3 3
 #define TasterPin4 2
+
+unsigned int indexHauptmenu = 0;
+unsigned int indexWeichenMenu = 0;
+unsigned int indexEinstellungMenu = 0;
+unsigned int indexStrassenMenu = 0;
 
 class ButtonFlanke {
       bool lastFlanke;
@@ -55,6 +61,7 @@ void ButtonFlanke::init(int Pin){
 Weiche weiche[20];
 ButtonFlanke Taster[4];
 Speicher speicherWeiche[20];
+LiquidCrystal_I2C lcd(0x27,20,4);
 
 void ladeAusEEPROM();
 
@@ -62,7 +69,6 @@ void ladeAusEEPROM();
 void setup() {
 	Serial.begin(9600); //Aktiviere Serielle Kommunkation
 	/*Definiere Weichen*/
-	
 	weiche[0].attach(WeichePin1);
 	weiche[1].attach(WeichePin2);
 	weiche[2].attach(WeichePin3);
@@ -93,11 +99,37 @@ void setup() {
 	Taster[1].init(TasterPin2);
 	Taster[2].init(TasterPin3);
 	Taster[3].init(TasterPin4);
-
+	/*Definiere Speicherplatz*/
+    int speicherAdresse = 0;
+	speicherAdresse = speicherWeiche[0].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[1].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[2].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[3].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[4].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[5].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[6].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[7].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[8].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[9].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[10].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[11].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[12].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[13].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[14].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[15].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[16].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[17].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[18].init(speicherAdresse);
+	speicherAdresse = speicherWeiche[19].init(speicherAdresse);
+	ladeAusEEPROM();
+	lcd.init();
+	lcd.backlight();
 }
 
 void loop() {
-
+	lcd.setCursor(3,0);
+	lcd.print("Hello, world!");
+	
   
 }
 
@@ -106,13 +138,13 @@ void ladeAusEEPROM(){
 	int posMax = 0;
 	for(int i = 0; i <= 20; i++) {
 		posMin = speicherWeiche[i].ladenMin();
-		if(posMin = 0) {
+		if(posMin == 0) {
 			posMin = 1200;
 			speicherWeiche[i].speichernMin(posMin);
 		}
 		weiche[i].setPosMin(posMin);
 		posMax = speicherWeiche[i].ladenMax();
-		if(posMax = 0) {
+		if(posMax == 0) {
 			posMax = 1800;
 			speicherWeiche[i].speichernMax(posMax);
 		}
