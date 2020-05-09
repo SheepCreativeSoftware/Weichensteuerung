@@ -2,10 +2,12 @@
 
 void Weiche::setPosMin(int x){
   posMin = x;
+  myServo.writeMicroseconds(posMin);
 }
 
 void Weiche::setPosMax(int x){
   posMax = x;
+  myServo.writeMicroseconds(posMax);
 }
 
 int Weiche::readPosMin(){

@@ -4,7 +4,7 @@
 
 class Weiche {
     int posMax, posMin = 1500;
-	bool posDirection = 0;
+	bool posDirection = false;
 	bool positionWeiche = false;
 	Servo myServo;
   public:
